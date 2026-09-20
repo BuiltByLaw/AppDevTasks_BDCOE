@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
 import 'custom_text_field.dart';
 
-class RegisterScreen extends StatelessWidget {
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'home.dart';
+
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController namecontroller = TextEditingController();
+
+  final TextEditingController emailcontroller = TextEditingController();
+
+  final TextEditingController passwordcontroller = TextEditingController();
+
+  final TextEditingController repeatPasswordcontroller =
+      TextEditingController();
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xff131313),
@@ -97,19 +114,23 @@ class RegisterScreen extends StatelessWidget {
               child: Column(
                 children: [
                   CustomTextField(
+                    controller: namecontroller,
                     label: 'Full Name',
                   ),
                   SizedBox(height: 25),
                   CustomTextField(
                     label: 'Email',
+                    controller: emailcontroller,
                   ),
                   SizedBox(height: 25),
                   CustomTextField(
+                    controller: passwordcontroller,
                     label: 'Password',
                     obscureText: true,
                   ),
                   SizedBox(height: 25),
                   CustomTextField(
+                    controller: repeatPasswordcontroller,
                     label: 'Repeat Password',
                     obscureText: true,
                   ),
@@ -118,7 +139,30 @@ class RegisterScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (passwordcontroller.text !=
+                            repeatPasswordcontroller.text) {
+                          print('Passwords do not match');
+                          return;
+                        }
+
+                        try {
+                          await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(
+                            email: emailcontroller.text.trim(),
+                            password: passwordcontroller.text,
+                          );
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                          );
+                        } on FirebaseAuthException catch (e) {
+                          print('Registration failed: ${e.code}');
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.pink,
                       ),

@@ -1,12 +1,69 @@
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'custom_text_field.dart';
+
+import 'home.dart';
+
+import 'package:google_sign_in/google_sign_in.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await GoogleSignIn().signOut();
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final TextEditingController emailcontroller = TextEditingController();
+  final TextEditingController passwordcontroller = TextEditingController();
+
+  Future<void> signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      if (googleUser == null) {
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    } catch (e) {
+      print('Google login failed: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Google login failed: $e'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,48 +140,15 @@ class MyApp extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 0),
-                        SizedBox(
-                          height: 55,
-                          child: TextField(
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                //vertical: 15,
-                              ),
-                              labelText: 'Email',
-                              labelStyle: TextStyle(
-                                color: Colors.white,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                          ),
+                        CustomTextField(
+                          controller: emailcontroller,
+                          label: 'Email',
                         ),
                         SizedBox(height: 25),
-                        SizedBox(
-                          height: 55,
-                          child: TextField(
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 15,
-                              ),
-                              labelText: 'Password',
-                              labelStyle: TextStyle(
-                                color: Colors.white,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                            ),
-                          ),
+                        CustomTextField(
+                          controller: passwordcontroller,
+                          label: 'Password',
+                          obscureText: true,
                         ),
                         SizedBox(height: 15),
                         Align(
@@ -142,7 +166,24 @@ class MyApp extends StatelessWidget {
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              try {
+                                await FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                                  email: emailcontroller.text.trim(),
+                                  password: passwordcontroller.text,
+                                );
+
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(),
+                                  ),
+                                );
+                              } on FirebaseAuthException catch (e) {
+                                print('Login failed: ${e.code}');
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.pink,
                               //foregroundColor: Colors.white,
@@ -201,11 +242,22 @@ class MyApp extends StatelessWidget {
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 15),
                                   ),
-                                  child: Text(
-                                    'Facebook',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/f.png',
+                                        width: 22,
+                                        height: 22,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Facebook',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -215,7 +267,9 @@ class MyApp extends StatelessWidget {
                               child: SizedBox(
                                 height: 55,
                                 child: OutlinedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    signInWithGoogle(context);
+                                  },
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: Colors.white,
                                     side: BorderSide(
@@ -227,11 +281,22 @@ class MyApp extends StatelessWidget {
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 15),
                                   ),
-                                  child: Text(
-                                    'Google',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/G.png',
+                                        width: 22,
+                                        height: 22,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Google',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),

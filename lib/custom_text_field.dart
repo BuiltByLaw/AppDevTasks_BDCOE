@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatefulWidget {
   final String label;
   final bool obscureText;
+  final TextEditingController? controller;
 
   const CustomTextField(
-      {super.key, required this.label, this.obscureText = false});
+      {super.key,
+      required this.label,
+      this.obscureText = false,
+      this.controller});
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -17,6 +21,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return SizedBox(
       height: 55,
       child: TextField(
+        controller: widget.controller,
         style: TextStyle(
           color: Colors.white,
         ),
