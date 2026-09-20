@@ -17,8 +17,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return SizedBox(
       height: 55,
       child: TextField(
+        style: TextStyle(
+          color: Colors.white,
+        ),
         obscureText: widget.obscureText && isObscured,
         decoration: InputDecoration(
+          labelStyle: TextStyle(
+            color: Colors.white,
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 20),
           suffixIcon: widget.obscureText
               ? IconButton(
                   onPressed: () {

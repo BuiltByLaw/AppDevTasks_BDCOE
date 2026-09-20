@@ -14,30 +14,55 @@ class RegisterScreen extends StatelessWidget {
           children: [
             Stack(
               children: [
-                Image.asset(
-                  'assets/Frame_13.png',
+                Container(
+                  height: 280,
                   width: double.infinity,
+                  color: Color(0xff10283a),
+                ),
+                Positioned(
+                  left: -120,
+                  top: -100,
+                  child: Container(
+                    width: 420,
+                    height: 380,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.03),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: -130,
+                  top: -100,
+                  child: Container(
+                    width: 360,
+                    height: 360,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.03),
+                    ),
+                  ),
                 ),
                 Positioned(
                   left: 30,
-                  top: 80,
-                  child:GestureDetector(
-                    onTap:(){
-                      Navigator.pop(context),
+                  top: 40,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
                     },
-                  child: Container(
-                    width: 55,
-                    height: 55,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade700,
-                      shape: BoxShape.circle,
+                    child: Container(
+                      width: 55,
+                      height: 55,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade700,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.arrow_back_ios_new,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
                   ),
                 ),
                 Padding(
@@ -45,7 +70,7 @@ class RegisterScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 80),
+                      SizedBox(height: 100),
                       Text(
                         'Register',
                         style: TextStyle(
@@ -94,13 +119,20 @@ class RegisterScreen extends StatelessWidget {
                     height: 55,
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Register'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.pink,
+                      ),
+                      child: Text('Register',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          )),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -112,13 +144,11 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 5),
-
                 TextButton(
-                  onPressed:(){
+                  onPressed: () {
                     Navigator.pop(context);
                   },
-
-                  Text(
+                  child: Text(
                     'Login',
                     style: TextStyle(
                       color: Colors.pink,
@@ -129,6 +159,7 @@ class RegisterScreen extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(height: 25),
           ],
         ),
       ),
